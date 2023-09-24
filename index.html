@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSE 355 Grade Calculator</title>
+</head>
+<body>
+<h1>CSE 355 Grade Calculator</h1>
+<p>This is a grade calculator for Colbourn's 355 class at ASU</p>
+<p><b>This is not official and is not associated with the professor or ASU in any way.</b></p>
+<p>Leave inputs blank for assignments which aren't due yet</p>
+<h3>Please make sure to check for errors as I'm not guaranteeing this to be 100% accurate</h3>
+<p>Inputs appear in the same order as on Canvas:</p><br>
+<label for="homework">Homework</label><br>
+<input type="number" id="homework"> / <input type="number" id="homeworktotal"><br><br>
+<hr style="width: 20%; margin-right: 80%;">
+<label for="assignments">Attendance (under "assignments" in Canvas)</label><br>
+<input type="number" id="assignments"> / <input type="number" id="assignmentstotal"><br><br>
+<hr style="width: 20%; margin-right: 80%;">
+<label for="midterm">Midterms</label><br>
+<input type="number" id="midterm"> / <input type="number" id="midtermtotal"><br><br>
+<hr style="width: 20%; margin-right: 80%;">
+<label for="quiz">Quizzes</label><br>
+<input type="number" id="quiz"> / <input type="number" id="quiztotal"><br><br>
+<hr style="width: 20%; margin-right: 80%;">
+<label for="final">Final</label><br>
+<input type="number" id="final"> / <input type="number" id="finaltotal"><br><br>
+<br><br><br>
+<p>Final for scheme 1: <b id="scheme1final"></b></p>
+<p>Final for scheme 2: <b id="scheme2final"></b></p>
+</body>
+<script>
+    //scheme 1 grading weight:
+    //final: 45%
+    //midterm1: 20%
+    //midterm2: 20%
+    //quizzes: 15%
+    //homework: 0%
+    //attendance: 0%
+    
+    //scheme 2 grading weight:
+    //final: 30%
+    //midterm1: 15%
+    //midterm2: 15%
+    //quizzes: 15%
+    //homework: 20%
+    //attendance: 10%
+    //this intentionally adds up to 105% as a safety net
+    
+    //whenever there is any input, recalculate the final grade
+    document.addEventListener("DOMContentLoaded", function() {
+        let inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                calculateGrades();
+            });
+        });
+    });
+    
+    function calculateGrades() {
+        let hw = parseFloat(document.getElementById('homework').value) || 0;
+        let hwTotal = parseFloat(document.getElementById('homeworktotal').value) || 0;
+        let attendance = parseFloat(document.getElementById('assignments').value) || 0;
+        let attendanceTotal = parseFloat(document.getElementById('assignmentstotal').value) || 0;
+        let midterm = parseFloat(document.getElementById('midterm').value) || 0;
+        let midtermTotal = parseFloat(document.getElementById('midtermtotal').value) || 0;
+        let quiz = parseFloat(document.getElementById('quiz').value) || 0;
+        let quizTotal = parseFloat(document.getElementById('quiztotal').value) || 0;
+        let final = parseFloat(document.getElementById('final').value) || 0;
+        let finalTotal = parseFloat(document.getElementById('finaltotal').value) || 0;
+        
+        let scheme1Final = 0, scheme2Final = 0, scheme1Weight = 0, scheme2Weight = 0;
+        
+        if(hwTotal) {
+            let hwPercent = hw / hwTotal;
+            scheme2Final += 0.20 * hwPercent;
+            scheme2Weight += 0.20;
+        }
+        
+        if(attendanceTotal) {
+            let attendancePercent = attendance / attendanceTotal;
+            scheme2Final += 0.10 * attendancePercent;
+            scheme2Weight += 0.10;
+        }
+        
+        if(midtermTotal) {
+            let midtermPercent = midterm / midtermTotal;
+            scheme1Final += 0.40 * midtermPercent; // 0.20 + 0.20 as midterm was counted twice originally
+            scheme2Final += 0.30 * midtermPercent; // 0.15 + 0.15 as midterm was counted twice originally
+            scheme1Weight += 0.40;
+            scheme2Weight += 0.30;
+        }
+        
+        if(quizTotal) {
+            let quizPercent = quiz / quizTotal;
+            scheme1Final += 0.15 * quizPercent;
+            scheme2Final += 0.15 * quizPercent;
+            scheme1Weight += 0.15;
+            scheme2Weight += 0.15;
+        }
+        
+        if(finalTotal) {
+            let finalPercent = final / finalTotal;
+            scheme1Final += 0.45 * finalPercent;
+            scheme2Final += 0.30 * finalPercent;
+            scheme1Weight += 0.45;
+            scheme2Weight += 0.30;
+        }
+        
+        // Normalize the final grades
+        if(scheme1Weight) scheme1Final = (scheme1Final / scheme1Weight) * 100;
+        if(scheme2Weight) scheme2Final = (scheme2Final / scheme2Weight) * 100;
+        
+        document.getElementById('scheme1final').textContent = scheme1Final.toFixed(2) + '%';
+        document.getElementById('scheme2final').textContent = scheme2Final.toFixed(2) + '%';
+    }
+</script>
+</html>
